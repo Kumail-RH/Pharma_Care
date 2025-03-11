@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:inventory_management_system/screens/admin/customer_invoices/customer_invoices.dart';
 import 'package:inventory_management_system/screens/admin/manage_medicines/manage_medicines.dart';
 import 'package:inventory_management_system/screens/admin/manage_orders/manage_orders.dart';
-// import 'package:inventory_management_system/screens/admin/manage_orders/manage_orders.dart';
 import 'package:inventory_management_system/screens/admin/manage_pharmacists/manage_pharmacists.dart';
+import 'package:inventory_management_system/screens/admin/suppliers/supplier.dart';
 import 'package:inventory_management_system/utility/icon_assets.dart';
 import 'package:inventory_management_system/widgets/custom_appbar.dart';
 import 'package:inventory_management_system/widgets/dashboard_button.dart';
@@ -43,6 +44,24 @@ class ManageScreen extends StatelessWidget {
                 suffixIcon: IconAssets.arrowForward,
                 onPressed: () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => ManageOrdersScreen()));
+                },
+              ),
+              const SizedBox(height: 20),
+              DashboardButton(
+                prefixIcon: IconAssets.supplierIcon,
+                text: 'Manage Supplier',
+                suffixIcon: IconAssets.arrowForward,
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => SupplierScreen()));
+                },
+              ),
+              const SizedBox(height: 20),
+              DashboardButton(
+                prefixIcon: IconAssets.invoices,
+                text: 'Customer Bills',
+                suffixIcon: IconAssets.arrowForward,
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => AdminInvoicesScreen()));
                 },
               ),
             // _manageTile(context, "Manage Pharmacists", Icons.person, ManagePharmacistsScreen()),

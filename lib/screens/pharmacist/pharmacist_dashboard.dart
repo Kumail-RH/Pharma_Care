@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:inventory_management_system/screens/pharmacist/Invoices.dart';
+import 'package:inventory_management_system/screens/pharmacist/customer.dart';
 import 'package:inventory_management_system/screens/pharmacist/manage_medicines.dart';
 import 'package:inventory_management_system/screens/pharmacist/process_order.dart';
 import 'package:inventory_management_system/screens/pharmacist/profile.dart';
@@ -45,10 +47,12 @@ class PharmacistDashboard extends StatelessWidget {
                     crossAxisSpacing: 10,
                     mainAxisSpacing: 10,
                     children: [
-                      _buildActionCard("Manage Medicines", Icons.medical_services, Colors.green, context, ManageMedicinesScreen()),
+                      _buildActionCard("Customer & POS", Icons.person, Colors.green, context, CustomerBillingScreen()),
                       _buildActionCard("Process\nOrders", Icons.shopping_cart, Colors.orange, context, ProcessOrdersScreen()),
                       _buildActionCard("Stock Alerts", Icons.warning, Colors.red, context,StockAlertScreen()),
-                      _buildActionCard("Profile & Settings", Icons.person, Colors.blue, context, ProfileScreen()),
+                      _buildActionCard("Manage Medicines", Icons.medical_services, Colors.green, context, ManageMedicinesScreen()),
+                      _buildActionCard("Invoices & Bills", Icons.receipt, Colors.blue, context, InvoicesScreen()),
+                      _buildActionCard("Profile & Settings", Icons.person, Colors.purple, context, ProfileScreen()),
                     ],
                   ),
                 ),

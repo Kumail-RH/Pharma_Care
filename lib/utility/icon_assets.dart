@@ -21,4 +21,5 @@ class IconAssets {
   static const String manageIcon = 'assets/images/manage.png';
   static const String cartIcon = 'assets/images/cart.jpg';
   static const String orderIcon = 'assets/images/Vector.jpg';
+  static const String invoices = 'assets/images/invoice.png';
 }
