@@ -22,6 +22,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isLoading = false;
   final _formKey = GlobalKey<FormState>();
 
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+  }
+
   void _register() async {
     if (!_formKey.currentState!.validate()) return;
 

@@ -29,11 +29,11 @@ class InvoicesScreen extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: (billData['medicines'] as List).map((med) {
-                  return Text("- ${med['medicine']} (x${med['quantity']}) - \$${med['price']}");
+                  return Text("- ${med['medicine']} (x${med['quantity']}) - ${med['price']}");
                 }).toList(),
               ),
               const SizedBox(height: 10),
-              Text("Total Price: \$${billData['totalPrice']}", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              Text("Total Price: ${billData['totalPrice']}", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             ],
           ),
           actions: [

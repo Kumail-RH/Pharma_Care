@@ -2,111 +2,109 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:inventory_management_system/utility/theme.dart';
+import 'package:inventory_management_system/widgets/custom_input_field.dart';
 
 class StockAlertScreen extends StatelessWidget {
   const StockAlertScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Get today's date and calculate expiry threshold (3 days from now)
     DateTime now = DateTime.now();
     DateTime expiryThreshold = now.add(const Duration(days: 3));
 
     return Scaffold(
-      // appBar: AppBar(title: const Text("Stock Alerts")),
+      appBar: AppBar(
+        title: Text("Stock Alert"),
+        backgroundColor: AppTheme.primaryColor,
+        automaticallyImplyLeading: false,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 40),
-            const Text(
-              "Low Stock Medicines",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-        
             Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('medicines')
-                    .where('quantity', isLessThan: 5) // Low stock condition
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return const Center(child: Text("No low stock medicines."));
-                  }
-                  return ListView(
-                    children: snapshot.data!.docs.map((doc) {
-                      var data = doc.data() as Map<String, dynamic>;
-
-                      // Proper handling of expiryDate format
-                      DateTime? expiryDate;
-                      if (data['expiryDate'] is Timestamp) {
-                        expiryDate = (data['expiryDate'] as Timestamp).toDate();
-                      } else if (data['expiryDate'] is String) {
-                        expiryDate = DateTime.tryParse(data['expiryDate']);
-                      }
-
-                      return StockAlertTile(
-                        medicineId: doc.id,
-                        medicineName: data['name'],
-                        quantity: data['quantity'],
-                        expiryDate: expiryDate,
-                      );
-                    }).toList(),
-                  );
-                },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Low Stock Medicines",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 10),
+                  Expanded(
+                    child: _buildMedicineList(
+                      query: FirebaseFirestore.instance
+                          .collection('medicines')
+                          .where('quantity', isLessThan: 7),
+                      noDataMessage: "No low-stock medicines.",
+                    ),
+                  ),
+                ],
               ),
             ),
-
-            const SizedBox(height: 20),
-            const Text(
-              "Near Expiry Medicines",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
+            const Divider(height: 2, color: Colors.black),
             Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('medicines')
-                    .where('expiryDate', isLessThan: Timestamp.fromDate(expiryThreshold))
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return const Center(child: Text("No medicines expiring soon."));
-                  }
-                  return ListView(
-                    children: snapshot.data!.docs.map((doc) {
-                      var data = doc.data() as Map<String, dynamic>;
-
-                      // Proper handling of expiryDate format
-                      DateTime? expiryDate;
-                      if (data['expiryDate'] is Timestamp) {
-                        expiryDate = (data['expiryDate'] as Timestamp).toDate();
-                      } else if (data['expiryDate'] is String) {
-                        expiryDate = DateTime.tryParse(data['expiryDate']);
-                      }
-
-                      return StockAlertTile(
-                        medicineId: doc.id,
-                        medicineName: data['name'],
-                        quantity: data['quantity'],
-                        expiryDate: expiryDate,
-                      );
-                    }).toList(),
-                  );
-                },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Near Expiry Medicines",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 10),
+                  Expanded(
+                    child: _buildMedicineList(
+                      query: FirebaseFirestore.instance
+                          .collection('medicines')
+                          .where('expiryDate',
+                          isLessThanOrEqualTo:
+                          Timestamp.fromDate(expiryThreshold)),
+                      noDataMessage: "No near-expiry medicines.",
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildMedicineList({
+    required Query query,
+    required String noDataMessage,
+  }) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: query.snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return Center(child: Text(noDataMessage));
+        }
+
+        return ListView(
+          children: snapshot.data!.docs.map((doc) {
+            var data = doc.data() as Map<String, dynamic>;
+
+            DateTime? expiryDate;
+            if (data['expiryDate'] is Timestamp) {
+              expiryDate = (data['expiryDate'] as Timestamp).toDate();
+            } else if (data['expiryDate'] is String) {
+              expiryDate = DateTime.tryParse(data['expiryDate']);
+            }
+
+            return StockAlertTile(
+              medicineId: doc.id,
+              medicineName: data['name'],
+              quantity: data['quantity'],
+              expiryDate: expiryDate,
+            );
+          }).toList(),
+        );
+      },
     );
   }
 }
@@ -163,23 +161,19 @@ class StockAlertTile extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text("Medicine: $medicineName"),
-              TextField(
-                controller: quantityController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: "Enter New Stock Quantity"),
-              ),
+              CustomInputField(
+                  controller: quantityController,
+                  keyboardType: TextInputType.number,
+                  labelText: "Enter New Stock Quantity"),
             ],
           ),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Cancel"),
-            ),
+            TextButton(onPressed: () => Navigator.pop(context), child: Text("Cancel")),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 int? newQuantity = int.tryParse(quantityController.text);
                 if (newQuantity != null && newQuantity > 0) {
-                  _sendStockRequest(context, newQuantity);
+                  await _sendStockRequest(context, newQuantity);
                 }
               },
               child: const Text("Request"),
@@ -190,32 +184,27 @@ class StockAlertTile extends StatelessWidget {
     );
   }
 
-  void _sendStockRequest(BuildContext context, int requestedQuantity) async {
+  Future<void> _sendStockRequest(BuildContext context, int requestedQuantity) async {
     User? user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
 
-    if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("User not logged in"),
-        backgroundColor: Colors.red,
-      ));
-      return;
-    }
+    DocumentSnapshot userDoc =
+    await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+    String pharmacistName = userDoc.exists ? userDoc['name'] : "Unknown";
 
-    // Send request to Firestore
     DocumentReference requestRef = await FirebaseFirestore.instance.collection('stock_requests').add({
       'medicineId': medicineId,
       'medicineName': medicineName,
       'requestedQuantity': requestedQuantity,
       'pharmacistId': user.uid,
-      'pharmacistName': user.displayName ?? "Unknown",
-      'status': 'Pending', // Admin will update it later
+      'pharmacistName': pharmacistName,
+      'status': 'Pending',
       'timestamp': FieldValue.serverTimestamp(),
     });
 
-    // Notify Admin about the new stock request
     FirebaseFirestore.instance.collection('notifications').add({
       'to': 'admin',
-      'message': 'New stock request for $medicineName',
+      'message': 'New stock request for $medicineName by $pharmacistName',
       'requestId': requestRef.id,
       'timestamp': FieldValue.serverTimestamp(),
     });

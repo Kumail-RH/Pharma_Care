@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import 'package:inventory_management_system/utility/constants.dart';
 import 'package:inventory_management_system/utility/theme.dart';
 import 'package:inventory_management_system/widgets/custom_input_field.dart';
@@ -21,6 +22,24 @@ class _ManageMedicinesScreenState extends State<ManageMedicinesScreen> {
   final TextEditingController _batchNumberController = TextEditingController();
 
   // Function to show add medicine dialog
+// Function to pick an expiry date
+  Future<void> _pickExpiryDate(BuildContext context) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2100),
+    );
+
+    if (pickedDate != null) {
+      String formattedDate = DateFormat('yyyy-MM-dd').format(pickedDate);
+      setState(() {
+        _expiryDateController.text = DateFormat('yyyy-MM-dd').format(pickedDate);
+      });
+    }
+  }
+
+  // Function to show add medicine dialog
   void _showAddMedicineDialog() {
     showDialog(
       context: context,
@@ -33,7 +52,17 @@ class _ManageMedicinesScreenState extends State<ManageMedicinesScreen> {
               TextField(controller: _nameController, decoration: InputDecoration(labelText: "Name")),
               TextField(controller: _quantityController, decoration: InputDecoration(labelText: "Quantity"), keyboardType: TextInputType.number),
               TextField(controller: _priceController, decoration: InputDecoration(labelText: "Price"), keyboardType: TextInputType.number),
-              TextField(controller: _expiryDateController, decoration: InputDecoration(labelText: "Expiry Date")),
+              TextField(
+                controller: _expiryDateController,
+                decoration: InputDecoration(
+                  labelText: "Expiry Date",
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.calendar_today),
+                    onPressed: () => _pickExpiryDate(context),
+                  ),
+                ),
+                readOnly: true,
+              ),
               TextField(controller: _manufacturerController, decoration: InputDecoration(labelText: "Manufacturer")),
               TextField(controller: _batchNumberController, decoration: InputDecoration(labelText: "Batch Number")),
             ],
@@ -49,7 +78,6 @@ class _ManageMedicinesScreenState extends State<ManageMedicinesScreen> {
       },
     );
   }
-
   // Function to add a medicine
   void _addMedicine() async {
     if (_nameController.text.isNotEmpty &&
@@ -102,16 +130,17 @@ class _ManageMedicinesScreenState extends State<ManageMedicinesScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text("Update Medicine"),
+          backgroundColor: AppTheme.lightBgColor,
+          title: Text("Add Medicine"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TextField(controller: _nameController, decoration: InputDecoration(labelText: "Name")),
-              TextField(controller: _quantityController, decoration: InputDecoration(labelText: "Quantity"), keyboardType: TextInputType.number),
-              TextField(controller: _priceController, decoration: InputDecoration(labelText: "Price"), keyboardType: TextInputType.number),
-              TextField(controller: _expiryDateController, decoration: InputDecoration(labelText: "Expiry Date")),
-              TextField(controller: _manufacturerController, decoration: InputDecoration(labelText: "Manufacturer")),
-              TextField(controller: _batchNumberController, decoration: InputDecoration(labelText: "Batch Number")),
+              CustomInputField(controller: _nameController, labelText: 'Name'),
+              CustomInputField(controller: _quantityController, labelText: 'Quantity', keyboardType: TextInputType.number),
+              CustomInputField(controller: _priceController, labelText: 'Price', keyboardType: TextInputType.number),
+              CustomInputField(controller: _expiryDateController, labelText: 'Expiry Date'),
+              CustomInputField(controller: _manufacturerController, labelText: 'Manufacturer'),
+              CustomInputField(controller: _batchNumberController, labelText: 'Batch Number'),
             ],
           ),
           actions: [
@@ -171,7 +200,8 @@ class _ManageMedicinesScreenState extends State<ManageMedicinesScreen> {
             children: snapshot.data!.docs.map((doc) {
               return ListTile(
                 title: Text(doc['name']),
-                subtitle: Text("Quantity: ${doc['quantity']}\nPrice: \$${doc['price']}\nExpiry: ${doc['expiryDate']}\nManufacturer: ${doc['manufacturer']}\nBatch: ${doc['batchNumber']}"),
+                subtitle: Text("Quantity: ${doc['quantity']}\nPrice: ${doc['price']}\nExpiry: ${doc['expiryDate']}\nManufacturer: ${doc['manufacturer']}\nBatch: ${doc['batchNumber']}"),
+
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [

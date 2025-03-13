@@ -106,7 +106,7 @@ class _ManagePharmacistsScreenState extends State<ManagePharmacistsScreen> {
       builder: (context) {
         return AlertDialog(
           backgroundColor: AppTheme.lightBgColor,
-          title: Text("Add Medicine"),
+          title: Text("Add Pharmacist"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:inventory_management_system/utility/constants.dart';
+import 'package:intl/intl.dart';
 import 'package:inventory_management_system/utility/theme.dart';
 import 'package:inventory_management_system/widgets/custom_input_field.dart';
 
@@ -12,6 +12,7 @@ class ManageMedicinesScreen extends StatefulWidget {
 }
 
 class _ManageMedicinesScreenState extends State<ManageMedicinesScreen> {
+  DateTime? _selectedExpiryDate;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
@@ -33,7 +34,7 @@ class _ManageMedicinesScreenState extends State<ManageMedicinesScreen> {
         'name': _nameController.text.trim(),
         'quantity': quantity,
         'price': double.parse(_priceController.text.trim()),
-        'expiryDate': _expiryDateController.text.trim(),
+        'expiryDate': Timestamp.fromDate(_selectedExpiryDate!),
         'manufacturer': _manufacturerController.text.trim(),
         'batchNumber': _batchNumberController.text.trim(),
         'createdAt': Timestamp.now(),
@@ -71,7 +72,8 @@ class _ManageMedicinesScreenState extends State<ManageMedicinesScreen> {
         automaticallyImplyLeading: false,
       ),
       body: StreamBuilder(
-        stream: _firestore.collection('medicines').orderBy('createdAt', descending: true).snapshots(),
+        stream: _firestore.collection('medicines').orderBy(
+            'createdAt', descending: true).snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -84,7 +86,9 @@ class _ManageMedicinesScreenState extends State<ManageMedicinesScreen> {
               return Card(
                 child: ListTile(
                   title: Text(doc['name']),
-                  subtitle: Text("Quantity: ${doc['quantity']}\nPrice: \$${doc['price']}\nExpiry: ${doc['expiryDate']}\nManufacturer: ${doc['manufacturer']}\nBatch No: ${doc['batchNumber']}"),
+                  subtitle: Text(
+                      "Quantity: ${doc['quantity']}\nPrice: ${doc['price']}\nExpiry: ${doc['expiryDate']}\nManufacturer: ${doc['manufacturer']}\nBatch: ${doc['batchNumber']}"),
+
                 ),
               );
             }).toList(),
@@ -100,6 +104,23 @@ class _ManageMedicinesScreenState extends State<ManageMedicinesScreen> {
   }
 
   void _showAddMedicineDialog() {
+
+    Future<void> _pickDate() async {
+      DateTime? pickedDate = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime.now(),
+        lastDate: DateTime(2100),
+      );
+
+      if (pickedDate != null) {
+        setState(() {
+          _selectedExpiryDate = pickedDate;
+          _expiryDateController.text = DateFormat('yyyy-MM-dd').format(pickedDate);
+        });
+      }
+    }
+
     showDialog(
       context: context,
       builder: (context) {
@@ -110,15 +131,31 @@ class _ManageMedicinesScreenState extends State<ManageMedicinesScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               CustomInputField(controller: _nameController, labelText: 'Name'),
-              CustomInputField(controller: _quantityController, labelText: 'Quantity', keyboardType: TextInputType.number),
-              CustomInputField(controller: _priceController, labelText: 'Price', keyboardType: TextInputType.number),
-              CustomInputField(controller: _expiryDateController, labelText: 'Expiry Date'),
-              CustomInputField(controller: _manufacturerController, labelText: 'Manufacturer'),
-              CustomInputField(controller: _batchNumberController, labelText: 'Batch Number'),
+              CustomInputField(controller: _quantityController,
+                  labelText: 'Quantity',
+                  keyboardType: TextInputType.number),
+              CustomInputField(controller: _priceController,
+                  labelText: 'Price',
+                  keyboardType: TextInputType.number),
+
+              // Expiry Date Picker
+              CustomInputField(
+                controller: _expiryDateController,
+                readOnly: true,
+                labelText: 'Expiry Date',
+                suffixIcon: Icon(Icons.calendar_today),
+                onTap: _pickDate,
+                ),
+
+              CustomInputField(controller: _manufacturerController,
+                  labelText: 'Manufacturer'),
+              CustomInputField(controller: _batchNumberController,
+                  labelText: 'Batch Number'),
             ],
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: Text("Cancel")),
+            TextButton(
+                onPressed: () => Navigator.pop(context), child: Text("Cancel")),
             ElevatedButton(onPressed: _addMedicine, child: Text("Add")),
           ],
         );
@@ -126,6 +163,34 @@ class _ManageMedicinesScreenState extends State<ManageMedicinesScreen> {
     );
   }
 }
+
+//   void _showAddMedicineDialog() {
+//     showDialog(
+//       context: context,
+//       builder: (context) {
+//         return AlertDialog(
+//           backgroundColor: AppTheme.lightBgColor,
+//           title: Text("Add Medicine"),
+//           content: Column(
+//             mainAxisSize: MainAxisSize.min,
+//             children: [
+//               CustomInputField(controller: _nameController, labelText: 'Name'),
+//               CustomInputField(controller: _quantityController, labelText: 'Quantity', keyboardType: TextInputType.number),
+//               CustomInputField(controller: _priceController, labelText: 'Price', keyboardType: TextInputType.number),
+//               CustomInputField(controller: _expiryDateController, labelText: 'Expiry Date'),
+//               CustomInputField(controller: _manufacturerController, labelText: 'Manufacturer'),
+//               CustomInputField(controller: _batchNumberController, labelText: 'Batch Number'),
+//             ],
+//           ),
+//           actions: [
+//             TextButton(onPressed: () => Navigator.pop(context), child: Text("Cancel")),
+//             ElevatedButton(onPressed: _addMedicine, child: Text("Add")),
+//           ],
+//         );
+//       },
+//     );
+//   }
+// }
 
 // import 'package:flutter/material.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';

@@ -9,13 +9,16 @@ class CustomInputField extends StatefulWidget {
   final bool isPassword;
   final TextInputType keyboardType;
   final String? Function(String?)? validator;
+  final bool? readOnly;
+  final Icon? suffixIcon;
+  final VoidCallback? onTap;
   const CustomInputField(
       {super.key,
       this.controller,
       this.isPassword = false,
       this.keyboardType = TextInputType.text,
       this.validator,
-      required this.labelText,});
+      required this.labelText, this.readOnly, this.suffixIcon, this.onTap});
 
   @override
   State<CustomInputField> createState() => _CustomInputFieldState();
@@ -32,6 +35,7 @@ class _CustomInputFieldState extends State<CustomInputField> {
         keyboardType: widget.keyboardType,
         obscureText: widget.isPassword,
         validator: widget.validator,
+        onTap: widget.onTap,
         style: TextStyle(
           color: AppTheme.lightTextColorDark, // Ensure text is the right color
           fontSize: AppSizes.sp(16),

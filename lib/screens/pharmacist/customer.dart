@@ -1,10 +1,15 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import '../../widgets/custom_appbar.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/data_input_field.dart';
 import '../../utility/icon_assets.dart';
 import 'package:intl/intl.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:open_file/open_file.dart';
 
 class CustomerBillingScreen extends StatefulWidget {
   const CustomerBillingScreen({super.key});
@@ -15,7 +20,8 @@ class CustomerBillingScreen extends StatefulWidget {
 
 class _CustomerBillingScreenState extends State<CustomerBillingScreen> {
   final TextEditingController customerNameController = TextEditingController();
-  final List<Map<String, dynamic>> medicines = []; // Stores selected medicines for billing
+  final List<Map<String, dynamic>> medicines = [
+  ]; // Stores selected medicines for billing
   String? selectedMedicineId; // Selected medicine Firestore ID
   int selectedQuantity = 1; // Default quantity
   double selectedMedicinePrice = 0.0; // Price per unit of selected medicine
@@ -68,7 +74,8 @@ class _CustomerBillingScreenState extends State<CustomerBillingScreen> {
   void saveBillToFirestore() async {
     if (customerNameController.text.isEmpty || medicines.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Please enter customer name and add at least one medicine!")),
+        SnackBar(content: Text(
+            "Please enter customer name and add at least one medicine!")),
       );
       return;
     }
@@ -97,6 +104,62 @@ class _CustomerBillingScreenState extends State<CustomerBillingScreen> {
     });
   }
 
+  // Function to generate and download PDF
+  Future<void> generateAndDownloadPDF() async {
+    try {
+      final pdf = pw.Document();
+
+      pdf.addPage(
+        pw.Page(
+          build: (pw.Context context) =>
+              pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                children: [
+                  pw.Text("Customer Billing Receipt",
+                      style: pw.TextStyle(
+                          fontSize: 24, fontWeight: pw.FontWeight.bold)),
+                  pw.SizedBox(height: 10),
+                  pw.Text("Customer Name: ${customerNameController.text}",
+                      style: pw.TextStyle(fontSize: 18)),
+                  pw.Text("Date: ${DateFormat('yyyy-MM-dd').format(
+                      DateTime.now())}",
+                      style: pw.TextStyle(fontSize: 18)),
+                  pw.Divider(),
+                  pw.Text("Items:",
+                      style: pw.TextStyle(
+                          fontSize: 20, fontWeight: pw.FontWeight.bold)),
+                  pw.Column(
+                    children: medicines.map((medicine) {
+                      return pw.Text(
+                          "${medicine['medicine']} - ${medicine['quantity']} pcs - ${medicine['price']}");
+                    }).toList(),
+                  ),
+                  pw.Divider(),
+                  pw.Text("Total Price: ${totalPrice.toStringAsFixed(2)}",
+                      style: pw.TextStyle(
+                          fontSize: 20, fontWeight: pw.FontWeight.bold)),
+                ],
+              ),
+        ),
+      );
+
+      // Get temporary directory
+      final directory = await getTemporaryDirectory();
+      final filePath = "${directory.path}/bill.pdf";
+      final file = File(filePath);
+
+      // Write the PDF to the file
+      await file.writeAsBytes(await pdf.save());
+
+      // Open the PDF
+      await OpenFile.open(filePath);
+
+      print("PDF saved at: $filePath");
+    } catch (e) {
+      print("Error generating PDF: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -107,7 +170,8 @@ class _CustomerBillingScreenState extends State<CustomerBillingScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CustomAppbar(text: "Customer Billing", icon: IconAssets.medIcon),
+                CustomAppbar(
+                    text: "Customer Billing", icon: IconAssets.medIcon),
                 const SizedBox(height: 20),
 
                 // Customer Name Input
@@ -128,25 +192,31 @@ class _CustomerBillingScreenState extends State<CustomerBillingScreen> {
 
                     var medicineList = snapshot.data!.docs;
                     if (medicineList.isEmpty) {
-                      return Text("No medicines available", style: TextStyle(color: Colors.red));
+                      return Text("No medicines available",
+                          style: TextStyle(color: Colors.red));
                     }
 
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Select Medicine:", style: TextStyle(fontSize: 16)),
+                        Text("Select Medicine:", style: TextStyle(
+                            fontSize: 16)),
                         DropdownButton<String>(
                           value: selectedMedicineId,
                           hint: Text("Choose a medicine"),
                           isExpanded: true,
                           items: medicineList.map((doc) {
-                            Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+                            Map<String, dynamic> data = doc.data() as Map<
+                                String,
+                                dynamic>;
                             return DropdownMenuItem<String>(
                               value: doc.id,
-                              child: Text("${data['name']} - ${data['quantity']} pcs"),
+                              child: Text(
+                                  "${data['name']} - ${data['quantity']} pcs"),
                               onTap: () {
                                 setState(() {
-                                  selectedMedicinePrice = data['price']; // Update price per unit
+                                  selectedMedicinePrice =
+                                  data['price']; // Update price per unit
                                 });
                               },
                             );
@@ -154,7 +224,8 @@ class _CustomerBillingScreenState extends State<CustomerBillingScreen> {
                           onChanged: (value) {
                             setState(() {
                               selectedMedicineId = value;
-                              selectedQuantity = 1; // Reset quantity when changing medicine
+                              selectedQuantity =
+                              1; // Reset quantity when changing medicine
                             });
                           },
                         ),
@@ -188,8 +259,10 @@ class _CustomerBillingScreenState extends State<CustomerBillingScreen> {
 
                         // Show calculated price
                         Text(
-                          "Total: \$${(selectedMedicinePrice * selectedQuantity).toStringAsFixed(2)}",
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          "Total: ${(selectedMedicinePrice * selectedQuantity)
+                              .toStringAsFixed(2)}",
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
                         ),
 
                         const SizedBox(height: 10),
@@ -200,7 +273,8 @@ class _CustomerBillingScreenState extends State<CustomerBillingScreen> {
                           onPressed: () {
                             if (selectedMedicineId == null) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text("Please select a medicine!")),
+                                SnackBar(
+                                    content: Text("Please select a medicine!")),
                               );
                               return;
                             }
@@ -224,7 +298,8 @@ class _CustomerBillingScreenState extends State<CustomerBillingScreen> {
                 const SizedBox(height: 20),
 
                 // Medicine List Display
-                Text("Medicines List:", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text("Medicines List:", style: TextStyle(
+                    fontSize: 18, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 10),
                 ListView.builder(
                   shrinkWrap: true,
@@ -234,8 +309,9 @@ class _CustomerBillingScreenState extends State<CustomerBillingScreen> {
                     final medicine = medicines[index];
                     return Card(
                       child: ListTile(
-                        title: Text("${medicine['medicine']} - ${medicine['quantity']} pcs"),
-                        subtitle: Text("Price: \$${medicine['price']}"),
+                        title: Text(
+                            "${medicine['medicine']} - ${medicine['quantity']} pcs"),
+                        subtitle: Text("Price: ${medicine['price']}"),
                       ),
                     );
                   },
@@ -244,7 +320,7 @@ class _CustomerBillingScreenState extends State<CustomerBillingScreen> {
                 const SizedBox(height: 20),
                 // Total Price Display
                 Text(
-                  "Total Price: \$${totalPrice.toStringAsFixed(2)}",
+                  "Total Price: ${totalPrice.toStringAsFixed(2)}",
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
 
@@ -255,6 +331,11 @@ class _CustomerBillingScreenState extends State<CustomerBillingScreen> {
                   text: "Save Bill",
                   onPressed: saveBillToFirestore,
                 ),
+
+                CustomButton(
+                  text: "Print",
+                  onPressed: generateAndDownloadPDF,
+                ),
               ],
             ),
           ),
@@ -263,3 +344,4 @@ class _CustomerBillingScreenState extends State<CustomerBillingScreen> {
     );
   }
 }
+

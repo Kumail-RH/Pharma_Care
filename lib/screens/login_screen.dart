@@ -22,6 +22,13 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
   final _formKey = GlobalKey<FormState>();
 
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+  }
   void _login() async {
     if (!_formKey.currentState!.validate()) return;
 
