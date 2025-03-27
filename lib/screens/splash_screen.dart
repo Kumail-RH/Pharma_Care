@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:inventory_management_system/screens/admin/admin_dashboard.dart';
-import 'package:inventory_management_system/screens/login_screen.dart';
+import 'package:inventory_management_system/screens/auth/login_screen.dart';
 import 'package:inventory_management_system/screens/pharmacist/pharmacist_dashboard.dart';
 
 

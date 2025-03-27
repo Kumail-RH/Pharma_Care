@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import '../../utility/constants.dart';
-import '../../utility/theme.dart';
+import '../../../utility/constants.dart';
+import '../../../utility/theme.dart';
 
 class InvoicesScreen extends StatelessWidget {
   const InvoicesScreen({super.key});

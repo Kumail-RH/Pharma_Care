@@ -42,7 +42,6 @@ class MyApp extends StatelessWidget {
       title: 'Pharma Care+',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      // themeMode: ThemeMode.system,
       home: Builder(
         builder: (context) {
           // This context now has proper MediaQuery access

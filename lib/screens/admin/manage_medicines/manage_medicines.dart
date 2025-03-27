@@ -184,7 +184,14 @@ class _ManageMedicinesScreenState extends State<ManageMedicinesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Manage Medicines")),
+      appBar: AppBar(
+        title: Text(
+          "Manage Medicines",
+          style: TextStyle(color: AppTheme.lightTextColorLight, fontSize: AppSizes.sp(18)),
+        ),
+        backgroundColor: AppTheme.primaryColor,
+        automaticallyImplyLeading: false,
+      ),
       body: StreamBuilder(
         stream: _firestore.collection('medicines').orderBy('createdAt', descending: true).snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {

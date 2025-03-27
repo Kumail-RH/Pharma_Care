@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:inventory_management_system/screens/auth/register_screen.dart';
 import 'package:inventory_management_system/services/auth_service.dart';
 import 'package:inventory_management_system/utility/constants.dart';
 import 'package:inventory_management_system/utility/theme.dart';
@@ -6,7 +7,6 @@ import 'package:inventory_management_system/widgets/custom_input_field.dart';
 import 'package:provider/provider.dart';
 import 'package:inventory_management_system/screens/admin/admin_dashboard.dart';
 import 'package:inventory_management_system/screens/pharmacist/pharmacist_dashboard.dart';
-import 'package:inventory_management_system/screens/register_screen.dart';
 import 'package:inventory_management_system/widgets/custom_button.dart';
 
 class LoginScreen extends StatefulWidget {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:inventory_management_system/screens/login_screen.dart';
+import 'package:inventory_management_system/screens/auth/login_screen.dart';
 import 'package:inventory_management_system/utility/constants.dart';
 import 'package:inventory_management_system/utility/theme.dart';
 import 'package:inventory_management_system/widgets/custom_button.dart';
