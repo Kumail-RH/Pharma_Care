@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:inventory_management_system/utility/constants.dart';
 import 'package:inventory_management_system/utility/theme.dart';
 
-
 class CustomButton extends StatelessWidget {
   final String text;
   final String? icon;
@@ -21,10 +20,8 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     width = width ?? 130;
 
-    
     return GestureDetector(
       onTap: onPressed,
       child: Container(
@@ -48,38 +45,35 @@ class CustomButton extends StatelessWidget {
             ),
           ],
         ),
-        child: icon != null
-            ? Row(
-                children: [
-                  Expanded(
-                    flex: 1,
-                    child: Image.asset(
-                      icon!,
-                      width: 34,
-                      height: 34,
+        child:
+            icon != null
+                ? Row(
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: Image.asset(icon!, width: 34, height: 34),
                     ),
-                  ),
-                  Expanded(
-                    flex: 2,
-                    child: Text(
-                      text,
-                      style: const TextStyle(
-                        color: AppTheme.lightTextColorLight, // Text color
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                    Expanded(
+                      flex: 2,
+                      child: Text(
+                        text,
+                        style: const TextStyle(
+                          color: AppTheme.lightTextColorLight, // Text color
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
+                  ],
+                )
+                : Text(
+                  text,
+                  style: TextStyle(
+                    color: AppTheme.lightTextColorLight, // Text color
+                    fontSize: AppSizes.sp(16),
+                    fontWeight: FontWeight.bold,
                   ),
-                ],
-              )
-            : Text(
-                text,
-                style: TextStyle(
-                  color: AppTheme.lightTextColorLight, // Text color
-                  fontSize: AppSizes.sp(16),
-                  fontWeight: FontWeight.bold,
                 ),
-              ),
       ),
     );
   }

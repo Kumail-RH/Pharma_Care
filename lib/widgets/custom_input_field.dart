@@ -18,7 +18,7 @@ class CustomInputField extends StatefulWidget {
       this.isPassword = false,
       this.keyboardType = TextInputType.text,
       this.validator,
-      required this.labelText, this.readOnly, this.suffixIcon, this.onTap});
+      required this.labelText, this.readOnly, this.suffixIcon, this.onTap,});
 
   @override
   State<CustomInputField> createState() => _CustomInputFieldState();
@@ -37,11 +37,12 @@ class _CustomInputFieldState extends State<CustomInputField> {
         validator: widget.validator,
         onTap: widget.onTap,
         style: TextStyle(
-          color: AppTheme.lightTextColorDark, // Ensure text is the right color
+          color: AppTheme.lightTextColorDark,
           fontSize: AppSizes.sp(16),
         ),
         decoration: InputDecoration(
-          hintText: widget.labelText,
+          hintText: widget.labelText, // Using hintText instead of labelText
+          floatingLabelBehavior: FloatingLabelBehavior.never, // 👈 Prevent label from floating
           hintStyle: TextStyle(
             fontSize: AppSizes.sp(14),
             color: AppTheme.lightTextColorDark.withOpacity(0.7),

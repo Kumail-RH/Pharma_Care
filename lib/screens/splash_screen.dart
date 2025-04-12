@@ -23,9 +23,6 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     super.initState();
-
-    // splashScreen.isLogin(context);
-
     // Animation Controller
     _animationController =
         AnimationController(duration: const Duration(seconds: 1), vsync: this);
