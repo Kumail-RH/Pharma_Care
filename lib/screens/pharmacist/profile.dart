@@ -77,8 +77,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 30),
-            // const Text("Update Profile", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            // const SizedBox(height: 40),
             Padding(
               padding: const EdgeInsets.only(left: 12.0),
               child: Text("Name", style: TextStyle(color: AppTheme.primaryColor, fontSize:  AppSizes.sp(16), fontWeight: FontWeight.bold)),
@@ -94,11 +92,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 : CustomButton(
                   width: AppSizes.wp(220),
                   text: "Update Name", onPressed: _updateName),
-                // : ElevatedButton(
-                //     onPressed: _updateName,
-                //     child: const Text("Update Name"),
-                //   ),
-            // const Divider(),
             const SizedBox(height: 10),
             CustomButton(
               width: AppSizes.wp(220),

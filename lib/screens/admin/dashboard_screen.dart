@@ -175,23 +175,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // // Fixed left Y-axis
-              // SizedBox(
-              //   width: 40,
-              //   child: Column(
-              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //     children: List.generate(
-              //       6,
-              //           (i) {
-              //         double val = (maxValue / 5) * (5 - i);
-              //         return Text(
-              //           val.toInt().toString(),
-              //           style: const TextStyle(fontSize: 10),
-              //         );
-              //       },
-              //     ),
-              //   ),
-              // ),
               const SizedBox(width: 10),
               // Scrollable Bar Chart
               Expanded(
