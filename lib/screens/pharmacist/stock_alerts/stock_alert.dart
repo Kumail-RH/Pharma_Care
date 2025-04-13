@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:inventory_management_system/utility/theme.dart';
 import 'package:inventory_management_system/widgets/custom_input_field.dart';
 
@@ -145,7 +146,7 @@ class StockAlertTile extends StatelessWidget {
             Text("Stock Left: $quantity"),
             if (expiryDate != null)
               Text(
-                "Expiry Date: ${expiryDate!.toLocal()}",
+                "Expiry Date: ${DateFormat.yMMMd().format(expiryDate!)}",
                 style: const TextStyle(color: Colors.red),
               ),
           ],
