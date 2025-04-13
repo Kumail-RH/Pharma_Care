@@ -11,7 +11,6 @@ import 'package:pdf/widgets.dart' as pw;
 import '../../../utility/constants.dart';
 import '../../../widgets/custom_appbar.dart';
 import '../../../widgets/custom_button.dart';
-import '../../../widgets/data_input_field.dart';
 import '../../../utility/icon_assets.dart';
 
 class CustomerBillingScreen extends StatefulWidget {
